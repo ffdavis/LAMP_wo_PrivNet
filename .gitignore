@@ -7,3 +7,7 @@
 
 # .tfvars files
 *.tfvars
+
+# Keys
+*.pem
+myKey.pem
