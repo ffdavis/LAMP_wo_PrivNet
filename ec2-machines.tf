@@ -116,21 +116,28 @@ resource "aws_instance" "database" {
 
 /* 
  AFTER RUNNING TERRAFORM:
+-------------------------
+ ... and after a few minutes, the process should be completed and you can go to your AWS console
+ and get the public ip address of the phpapp EC2 server/machine. 
 
- ... and after a few minutes, the process should be completed and you can go to your AWS web console 
- and read the public ip of your EC2 machine. 
  Visit the url in your browser, and you will see the result of the php command.
 
-   http://54.186.85.117/calldb.php
-   the value is: Hey Fer!...linuxacademythebest
+   http://pub-ip-add-phpapp-EC2-server/calldb.php
+     
+     the value is: Hey Fer...Linux Academy is the Best
+
+   http://pub-ip-add-phpapp-EC2-server/calldbdos.php
+
+      This is the output from MySQL DB "test"
+
 
 TESTING THE ZONE
-
+----------------
  To test your internal DNS routing system, you can log in inside the web server machine to run 
  a DNS query for the private zone like this:
 
      $ host mydatabase.fdavis.internal
-     mydatabase.fdavis.internal has address 172.28.3.142
+     mydatabase.fdavis.internal has address 172.xx.x.xxx
  
  If you try to do it from a machine outside the vpc, you will have:
 
@@ -138,21 +145,52 @@ TESTING THE ZONE
      Host mydatabase.fdavis.internal. not found: 3(NXDOMAIN)
 
 */
-
-
 /*
-LATEST VERSIONS
+MANUAL SQL COMMANDS TO TROUBLESHOOT THE PHP/MySQL issue connecion:
+-------------------------------------------------------------------
+mysql -u root -psecret mysql
+mysql> SELECT User FROM mysql.user;
+mysql> SELECT * FROM mysql.user;
+mysql> desc mysql.user;
 
-sudo yum update -y
-yum list httpd
+mysql -u root -psecret mysql
+mysql> show databases;
+mysql> use test;
+mysql> show tables;
 
-sudo yum install -y httpd24
-sudo yum install -y php73
-sudo yum install -y php73-mysqlnd
+mysql -u root -psecret test
+INSERT INTO mytable (mycol) values ('Hey Fer... Linux Academy the best');
 
-sudo yum install -y mysql57-server
+mysql -u root -psecret test
+select * from mytable;
 
-service httpd24 status
+mysql -u USERNAME -pPASSWORD -h HOSTNAMEORIP DATABASENAME 
+mysql -u root -psecret -h mydatabase.fdavis.internal test
+select * from mytable;
+
+mysql> show grants for 'root';
++----------------------------------+
+| Grants for root@%                |
++----------------------------------+
+| GRANT USAGE ON *.* TO 'root'@'%' |
++----------------------------------+
+
+mysql> show grants for 'root'@'localhost';
++---------------------------------------------------------------------+
+| Grants for root@localhost                                           |
++---------------------------------------------------------------------+
+| GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION |
+| GRANT PROXY ON ''@'' TO 'root'@'localhost' WITH GRANT OPTION        |
++---------------------------------------------------------------------+
+
+mysql> GRANT ALL PRIVILEGES ON database_name.* TO 'username'@'localhost';
+
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
+
+mysql -u root -psecret -h mydatabase.fdavis.internal test
+SELECT * FROM mytable;
+
+mysql -u root -psecret -e "create user 'root'@'%' identified by 'secret';" mysql
+mysql -u root -psecret -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';" mysql
 
 */
-
