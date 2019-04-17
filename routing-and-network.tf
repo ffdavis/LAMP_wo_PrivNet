@@ -1,10 +1,11 @@
-# When you start from scratch, you need to attach an INTERNET GATEWAY to your VPC and define a network ACL. 
-# There aren’t restriction at network ACL level because the restriction rules will be enforced by security group.
+/* When you start from scratch, you need to attach an INTERNET GATEWAY to your VPC and define a network ACL. 
+ There aren’t restriction at network ACL level because the restriction rules will be enforced by security group.
 
-# Declare the data source
-# One thing worth noting is that the data called aws_availability_zones provide the correct name of the availability zones in the chosen region. 
-# This way we don’t need to add letters to the region variable and we can avoid mistakes. 
-# For example, the North Virginia region where region b does not exist, and in other regions where there are 2 or 4 AZs .
+ Declare the data source
+ One thing worth noting is that the data called aws_availability_zones provide the correct name of the availability zones in the chosen region. 
+ This way we don’t need to add letters to the region variable and we can avoid mistakes. 
+ For example, the North Virginia region where region b does not exist, and in other regions where there are 2 or 4 AZs .
+*/
 data "aws_availability_zones" "available" {}
 
 # EXTERNAL NETWORK , IG, ROUTE TABLE

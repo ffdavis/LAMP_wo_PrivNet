@@ -32,13 +32,41 @@ resource "aws_instance" "phpapp" {
     sudo service httpd start
     sudo chkconfig httpd on
     echo "<?php" >> /var/www/html/calldb.php
-    echo "\$conn = new mysqli('mydatabase.linuxacademy.internal', 'root', 'secret', 'test');" >> /var/www/html/calldb.php
+    echo "\$conn = new mysqli('mydatabase.fdavis.internal', 'root', 'secret', 'test');" >> /var/www/html/calldb.php
     echo "\$sql = 'SELECT * FROM mytable'; " >> /var/www/html/calldb.php
     echo "\$result = \$conn->query(\$sql); " >> /var/www/html/calldb.php
     echo "while(\$row = \$result->fetch_assoc()) { echo 'the value is: ' . \$row['mycol'] ;} " >> /var/www/html/calldb.php
     echo "\$conn->close(); " >> /var/www/html/calldb.php
     echo "?>" >> /var/www/html/calldb.php
     HEREDOC
+
+  provisioner "file" {
+    source      = "calldbdos.php"
+    destination = "~/calldbdos.php"
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = "${file("myKey.pem")}"
+      timeout     = "10m"
+      agent       = "false"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mkdir -p /var/www/html",
+      "sudo cp ~/calldbdos.php /var/www/html/calldbdos.php",
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = "${file("myKey.pem")}"
+      timeout     = "10m"
+      agent       = "false"
+    }
+  }
 }
 
 /*
@@ -57,8 +85,10 @@ resource "aws_instance" "database" {
 
   # associate_public_ip_address = "false"
   associate_public_ip_address = "true"
-  subnet_id                   = "${aws_subnet.PrivateAZA.id}"
-  vpc_security_group_ids      = ["${aws_security_group.Database.id}"]
+
+  # subnet_id                = "${aws_subnet.PrivateAZA.id}"
+  subnet_id              = "${aws_subnet.PublicAZA.id}"
+  vpc_security_group_ids = ["${aws_security_group.Database.id}"]
 
   key_name = "${var.key_name}"
 
@@ -73,8 +103,10 @@ resource "aws_instance" "database" {
     sudo service mysqld start
     /usr/bin/mysqladmin -u root password 'secret'
     mysql -u root -psecret -e "create user 'root'@'%' identified by 'secret';" mysql
+    mysql -u root -psecret -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';" mysql
+    mysql -u root -psecret -e 'CREATE DATABASE test;'
     mysql -u root -psecret -e 'CREATE TABLE mytable (mycol varchar(255));' test
-    mysql -u root -psecret -e "INSERT INTO mytable (mycol) values ('Hey Fer!...linuxacademythebest') ;" test
+    mysql -u root -psecret -e "INSERT INTO mytable (mycol) values ('Hey Fer... Linux Academy is the Best') ;" test
     HEREDOC
 }
 
@@ -97,8 +129,8 @@ TESTING THE ZONE
  To test your internal DNS routing system, you can log in inside the web server machine to run 
  a DNS query for the private zone like this:
 
-     $ host mydatabase.linuxacademy.internal
-     mydatabase.linuxacademy.internal has address 172.28.3.142
+     $ host mydatabase.fdavis.internal
+     mydatabase.fdavis.internal has address 172.28.3.142
  
  If you try to do it from a machine outside the vpc, you will have:
 

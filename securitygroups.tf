@@ -1,13 +1,13 @@
-#
-# We have two security groups: 
-#   - one for the web application, 
-#   - and another for the database. 
-# 
-# They both need to have the outbound (egress) rule to have internet access because yum will install the Apache and MySQL servers, 
-# but the connection to the MySQL port will be allowed only from instances that belong to the webapp security group.
-# 
-# I have left the ssh port open only for debug reason, but you can also delete that rule.
-
+/*
+ We have two security groups: 
+   - one for the web application, 
+   - and another for the database. 
+ 
+ They both need to have the outbound (egress) rule to have internet access because yum will install the Apache and MySQL servers, 
+ but the connection to the MySQL port will be allowed only from instances that belong to the webapp security group.
+ 
+ I have left the ssh port open only for debug reason, but you can also delete that rule.
+*/
 resource "aws_security_group" "FrontEnd" {
   name = "FrontEnd"
 

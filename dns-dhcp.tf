@@ -1,14 +1,14 @@
-# In this file, 4 things were accomplished: 
-#
-#   - the dhcp was created,
-#   - the private Route53 DNS zone was created, 
-#   - the association with the VPC was made, 
-#   - and the DNS record for the database was created. 
-#
-# Terraform perform the actions in the right order, the last component in this file will be the database dns record 
-# because it depends on the private ip of the EC2 database machine. 
-# This machine will be allocated during the database creation.
+/* In this file, 4 things were accomplished: 
 
+   - the dhcp was created,
+   - the private Route53 DNS zone was created, 
+   - the association with the VPC was made, 
+   - and the DNS record for the database was created. 
+
+ Terraform perform the actions in the right order, the last component in this file will be the database dns record 
+ because it depends on the private ip of the EC2 database machine. 
+ This machine will be allocated during the database creation.
+*/
 resource "aws_vpc_dhcp_options" "mydhcp" {
   domain_name         = "${var.DnsZoneName}"
   domain_name_servers = ["AmazonProvidedDNS"]

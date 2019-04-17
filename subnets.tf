@@ -1,6 +1,6 @@
-#
-# There are two subnets associated with the respective routes: a public and a private.
-#
+/*
+ There are two subnets associated with the respective routes: a public and a private.
+*/
 resource "aws_subnet" "PublicAZA" {
   vpc_id     = "${aws_vpc.terraformmain.id}"
   cidr_block = "${var.Subnet-Public-AzA-CIDR}"
